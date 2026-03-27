@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkedIn Contact Extractor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>LinkedIn Extractor</h1>
+      <p class="subtitle">Extract contacts from profiles & posts</p>
+    </header>
+
+    <div class="actions">
+      <button id="extract" class="btn primary">
+        <span class="icon">🔍</span> Extract Profile
+      </button>
+      <button id="export" class="btn secondary">
+        <span class="icon">📊</span> Export CSV
+      </button>
+      <button id="clear" class="btn danger">
+        <span class="icon">🗑️</span> Clear Data
+      </button>
+    </div>
+
+    <div class="stats">
+      <p id="recordCount">Records: 0</p>
+    </div>
+
+    <div id="status" class="status">Ready</div>
+
+    <div class="recent-list">
+      <h3>Recently Extracted</h3>
+      <ul id="previewList"></ul>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
