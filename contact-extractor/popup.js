@@ -88,7 +88,7 @@ exportBtn.addEventListener("click", async () => {
   }
 
   const csvRows = [
-    ["Name", "Emails", "Phones", "Profile URL", "Extracted At"]
+    ["name", "email", "phone", "link of profile"]
   ];
 
   profiles.forEach((p) => {
@@ -96,8 +96,7 @@ exportBtn.addEventListener("click", async () => {
       `"${p.name.replace(/"/g, '""')}"`,
       `"${p.emails.join(" | ")}"`,
       `"${p.phones.join(" | ")}"`,
-      `"${p.profileUrl}"`,
-      new Date(p.timestamp).toLocaleString()
+      `"${p.profileUrl}"`
     ]);
   });
 

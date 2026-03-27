@@ -69,36 +69,52 @@ async function extractProfileData() {
 
   // 2. ROBUST CONTACT INFO EXTRACTION
   const contactInfoLink = document.querySelector("#top-card-text-details-contact-info") || 
+                          document.querySelector('a[href*="/overlay/contact-info/"]') ||
                           document.querySelector('a[data-control-name="contact_see_more"]') ||
                           Array.from(document.querySelectorAll('a')).find(a => a.innerText.toLowerCase().includes('contact info'));
 
-  if (contactInfoLink) {
-    console.log("Contact info link found, clicking...");
-    contactInfoLink.click();
+  if (contactInfoLink || window.location.href.includes('/overlay/contact-info/')) {
+    console.log("Contact info detected...");
+    if (contactInfoLink && !window.location.href.includes('/overlay/contact-info/')) {
+      contactInfoLink.click();
+    }
     
     // Wait for modal components to load
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
     
     const modal = document.querySelector(".pv-contact-info") || 
                   document.querySelector(".artdeco-modal") ||
-                  document.querySelector(".pv-profile-section");
+                  document.querySelector(".pv-profile-section") ||
+                  document.querySelector("#artdeco-modal-outlet");
     
     if (modal) {
       console.log("Modal found, extracting data...");
       
-      // Targeted extraction from modal
-      const emailItems = modal.querySelectorAll('.pv-contact-info__contact-type--email .pv-contact-info__contact-item, a[href^="mailto:"]');
-      emailItems.forEach(item => {
-        const text = item.innerText || item.getAttribute('href').replace('mailto:', '');
-        const match = text.match(/[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi);
-        if (match) modalEmails.push(...match);
+      // Targeted extraction from modal - Email
+      const emailSelectors = [
+        '.pv-contact-info__contact-type--email .pv-contact-info__contact-item',
+        'a[href^="mailto:"]',
+        '.pv-contact-info__contact-link[href^="mailto:"]'
+      ];
+      emailSelectors.forEach(sel => {
+        modal.querySelectorAll(sel).forEach(item => {
+          const text = item.innerText || item.getAttribute('href').replace('mailto:', '');
+          const match = text.match(/[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi);
+          if (match) modalEmails.push(...match);
+        });
       });
 
-      const phoneItems = modal.querySelectorAll('.pv-contact-info__contact-type--phone .pv-contact-info__contact-item');
-      phoneItems.forEach(item => {
-        const text = item.innerText;
-        const match = text.match(/(\+?\d{1,3}[-.\s]?)?[6-9]\d{9}/g);
-        if (match) modalPhones.push(...match);
+      // Targeted extraction from modal - Phone
+      const phoneSelectors = [
+        '.pv-contact-info__contact-type--phone .pv-contact-info__contact-item',
+        '.pv-contact-info__contact-type--phone span'
+      ];
+      phoneSelectors.forEach(sel => {
+        modal.querySelectorAll(sel).forEach(item => {
+          const text = item.innerText;
+          const match = text.match(/(\+?\d{1,3}[-.\s]?)?[6-9]\d{9}/g);
+          if (match) modalPhones.push(...match);
+        });
       });
 
       // Fallback: general regex on modal text
