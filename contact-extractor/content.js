@@ -43,23 +43,90 @@ function extractPostsAndCommentsData() {
  * Main extraction function.
  */
 async function extractProfileData() {
-  const nameElement = document.querySelector("h1.text-heading-xlarge") || document.querySelector("h1");
-  const name = nameElement ? nameElement.innerText.trim() : "Unknown";
+  // 1. IMPROVED NAME SELECTORS
+  const nameSelectors = [
+    "h1.text-heading-xlarge",
+    ".pv-top-card--list:first-child li:first-child",
+    "h1",
+    ".text-heading-xlarge",
+    "main .artdeco-card .t-24",
+    ".pv-top-card-section__name",
+    ".top-card-layout__title"
+  ];
+  
+  let name = "Unknown";
+  for (const selector of nameSelectors) {
+    const el = document.querySelector(selector);
+    if (el && el.innerText.trim()) {
+      name = el.innerText.trim().split('\n')[0];
+      break;
+    }
+  }
+  
   const profileUrl = window.location.href;
+  let modalEmails = [];
+  let modalPhones = [];
 
-  // Auto-scroll to load more posts/content
+  // 2. ROBUST CONTACT INFO EXTRACTION
+  const contactInfoLink = document.querySelector("#top-card-text-details-contact-info") || 
+                          document.querySelector('a[data-control-name="contact_see_more"]') ||
+                          Array.from(document.querySelectorAll('a')).find(a => a.innerText.toLowerCase().includes('contact info'));
+
+  if (contactInfoLink) {
+    console.log("Contact info link found, clicking...");
+    contactInfoLink.click();
+    
+    // Wait for modal components to load
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const modal = document.querySelector(".pv-contact-info") || 
+                  document.querySelector(".artdeco-modal") ||
+                  document.querySelector(".pv-profile-section");
+    
+    if (modal) {
+      console.log("Modal found, extracting data...");
+      
+      // Targeted extraction from modal
+      const emailItems = modal.querySelectorAll('.pv-contact-info__contact-type--email .pv-contact-info__contact-item, a[href^="mailto:"]');
+      emailItems.forEach(item => {
+        const text = item.innerText || item.getAttribute('href').replace('mailto:', '');
+        const match = text.match(/[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi);
+        if (match) modalEmails.push(...match);
+      });
+
+      const phoneItems = modal.querySelectorAll('.pv-contact-info__contact-type--phone .pv-contact-info__contact-item');
+      phoneItems.forEach(item => {
+        const text = item.innerText;
+        const match = text.match(/(\+?\d{1,3}[-.\s]?)?[6-9]\d{9}/g);
+        if (match) modalPhones.push(...match);
+      });
+
+      // Fallback: general regex on modal text
+      const modalContacts = extractContactFromText(modal.innerText);
+      modalEmails.push(...modalContacts.emails);
+      modalPhones.push(...modalContacts.phones);
+      
+      // Close modal
+      const closeBtn = document.querySelector('button[aria-label="Dismiss"]') || 
+                       document.querySelector('.artdeco-modal__dismiss') ||
+                       document.querySelector('.close-modal');
+      if (closeBtn) closeBtn.click();
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  // 3. AUTO-SCROLL & PAGE SCAN
   await autoScroll();
-
-  // Scan whole page text
-  const pageText = document.body.innerText;
-  const pageContacts = extractContactFromText(pageText);
-
-  // Scan posts and comments specifically
+  const pageContacts = extractContactFromText(document.body.innerText);
   const postContacts = extractPostsAndCommentsData();
 
   // Merge and deduplicate
-  const allEmails = [...new Set([...pageContacts.emails, ...postContacts.emails])];
-  const allPhones = [...new Set([...pageContacts.phones, ...postContacts.phones])];
+  const allEmails = [...new Set([...modalEmails, ...pageContacts.emails, ...postContacts.emails])];
+  const allPhones = [...new Set([...modalPhones, ...pageContacts.phones, ...postContacts.phones])];
+
+  // Final check to close any open modal
+  const finalCloseBtn = document.querySelector('button[aria-label="Dismiss"]') || document.querySelector('.artdeco-modal__dismiss');
+  if (finalCloseBtn) finalCloseBtn.click();
 
   return {
     name,
@@ -76,12 +143,12 @@ async function extractProfileData() {
 async function autoScroll() {
   let totalHeight = 0;
   const distance = 500;
-  const maxScroll = 2000; // Limit scroll to avoid infinite loops or too much data
+  const maxScroll = 1500; // Reduced for faster extraction
 
   while (totalHeight < maxScroll && totalHeight < document.body.scrollHeight) {
     window.scrollBy(0, distance);
     totalHeight += distance;
-    await new Promise(resolve => setTimeout(resolve, 800)); // Wait for content to load
+    await new Promise(resolve => setTimeout(resolve, 600)); 
   }
 }
 

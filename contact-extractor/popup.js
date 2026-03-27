@@ -3,24 +3,30 @@ const exportBtn = document.getElementById("export");
 const clearBtn = document.getElementById("clear");
 const status = document.getElementById("status");
 const recordCountEl = document.getElementById("recordCount");
-const previewList = document.getElementById("previewList");
+const dataBody = document.getElementById("dataBody");
 
 // Update UI on load
 document.addEventListener("DOMContentLoaded", updateUI);
 
 async function updateUI() {
   const { profiles = [] } = await chrome.storage.local.get("profiles");
-  recordCountEl.innerText = `Records: ${profiles.length}`;
+  recordCountEl.innerText = `Total Records: ${profiles.length}`;
 
-  previewList.innerHTML = "";
-  profiles.slice(0, 5).forEach(p => {
-    const li = document.createElement("li");
-    li.className = "profile-item";
-    li.innerHTML = `
-      <span class="name">${p.name}</span>
-      <span class="contact">${p.emails.length ? p.emails[0] : (p.phones.length ? p.phones[0] : 'No contacts found')}</span>
+  dataBody.innerHTML = "";
+  if (profiles.length === 0) {
+    dataBody.innerHTML = '<tr><td colspan="3" class="no-data">No data saved yet</td></tr>';
+    return;
+  }
+
+  profiles.forEach(p => {
+    const tr = document.createElement("tr");
+    const contacts = [...p.emails, ...p.phones].join(", ") || "None found";
+    tr.innerHTML = `
+      <td style="font-weight:600">${p.name}</td>
+      <td class="contact-cell" title="${contacts}">${contacts}</td>
+      <td><a href="${p.profileUrl}" target="_blank" class="icon-link">🔗</a></td>
     `;
-    previewList.appendChild(li);
+    dataBody.appendChild(tr);
   });
 }
 

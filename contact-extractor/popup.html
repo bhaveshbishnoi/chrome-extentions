@@ -31,9 +31,20 @@
 
     <div id="status" class="status">Ready</div>
 
-    <div class="recent-list">
-      <h3>Recently Extracted</h3>
-      <ul id="previewList"></ul>
+    <div class="data-section">
+      <h3>Saved Records</h3>
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Contacts</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody id="dataBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
   <script src="popup.js"></script>
