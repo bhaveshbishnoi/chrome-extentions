@@ -37,24 +37,25 @@ function extractPostsAndCommentsData() {
     emails: Array.from(emails),
     phones: Array.from(phones)
   };
+  return { emails: Array.from(emails), phones: Array.from(phones) };
 }
 
 /**
  * Main extraction function.
  */
 async function extractProfileData() {
-  // 1. IMPROVED NAME SELECTORS
+  // 1. ROBUST NAME EXTRACTION (with title fallback)
   const nameSelectors = [
     "h1.text-heading-xlarge",
+    "main h1",
     ".pv-top-card--list:first-child li:first-child",
-    "h1",
     ".text-heading-xlarge",
+    ".top-card-layout__title",
     "main .artdeco-card .t-24",
-    ".pv-top-card-section__name",
-    ".top-card-layout__title"
+    ".pv-top-card-section__name"
   ];
-  
-  let name = "Unknown";
+
+  let name = "";
   for (const selector of nameSelectors) {
     const el = document.querySelector(selector);
     if (el && el.innerText.trim()) {
@@ -62,77 +63,61 @@ async function extractProfileData() {
       break;
     }
   }
-  
+
+  // Fallback to page title if still unknown
+  if (!name || name.toLowerCase() === "unknown") {
+    const title = document.title;
+    if (title && title.includes("|")) {
+      name = title.split("|")[0].trim();
+    } else if (title) {
+      name = title.replace(/\([^)]*\)/g, "").trim(); // Remove (X notifications) etc
+    }
+  }
+
+  if (!name) name = "Unknown";
+
   const profileUrl = window.location.href;
   let modalEmails = [];
   let modalPhones = [];
 
-  // 2. ROBUST CONTACT INFO EXTRACTION
-  const contactInfoLink = document.querySelector("#top-card-text-details-contact-info") || 
+  // 2. CONTACT MODAL EXTRACTION
+  const contactInfoLink = document.querySelector("#top-card-text-details-contact-info") ||
                           document.querySelector('a[href*="/overlay/contact-info/"]') ||
-                          document.querySelector('a[data-control-name="contact_see_more"]') ||
-                          Array.from(document.querySelectorAll('a')).find(a => a.innerText.toLowerCase().includes('contact info'));
+                          document.querySelector('a[data-control-name="contact_see_more"]');
 
   if (contactInfoLink || window.location.href.includes('/overlay/contact-info/')) {
-    console.log("Contact info detected...");
     if (contactInfoLink && !window.location.href.includes('/overlay/contact-info/')) {
       contactInfoLink.click();
     }
-    
-    // Wait for modal components to load
     await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    const modal = document.querySelector(".pv-contact-info") || 
+
+    // Scan modal content thoroughly
+    const modal = document.querySelector(".pv-contact-info") ||
                   document.querySelector(".artdeco-modal") ||
-                  document.querySelector(".pv-profile-section") ||
                   document.querySelector("#artdeco-modal-outlet");
-    
+
     if (modal) {
-      console.log("Modal found, extracting data...");
-      
-      // Targeted extraction from modal - Email
-      const emailSelectors = [
-        '.pv-contact-info__contact-type--email .pv-contact-info__contact-item',
-        'a[href^="mailto:"]',
-        '.pv-contact-info__contact-link[href^="mailto:"]'
-      ];
-      emailSelectors.forEach(sel => {
-        modal.querySelectorAll(sel).forEach(item => {
-          const text = item.innerText || item.getAttribute('href').replace('mailto:', '');
-          const match = text.match(/[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi);
-          if (match) modalEmails.push(...match);
-        });
-      });
-
-      // Targeted extraction from modal - Phone
-      const phoneSelectors = [
-        '.pv-contact-info__contact-type--phone .pv-contact-info__contact-item',
-        '.pv-contact-info__contact-type--phone span'
-      ];
-      phoneSelectors.forEach(sel => {
-        modal.querySelectorAll(sel).forEach(item => {
-          const text = item.innerText;
-          const match = text.match(/(\+?\d{1,3}[-.\s]?)?[6-9]\d{9}/g);
-          if (match) modalPhones.push(...match);
-        });
-      });
-
-      // Fallback: general regex on modal text
       const modalContacts = extractContactFromText(modal.innerText);
       modalEmails.push(...modalContacts.emails);
       modalPhones.push(...modalContacts.phones);
-      
-      // Close modal
-      const closeBtn = document.querySelector('button[aria-label="Dismiss"]') || 
-                       document.querySelector('.artdeco-modal__dismiss') ||
-                       document.querySelector('.close-modal');
+
+      // Targeted modal links
+      modal.querySelectorAll('a[href^="mailto:"], .pv-contact-info__contact-link').forEach(a => {
+        const text = a.innerText || a.href;
+        const res = extractContactFromText(text);
+        modalEmails.push(...res.emails);
+      });
+
+      const closeBtn = document.querySelector('button[aria-label="Dismiss"]') || document.querySelector('.artdeco-modal__dismiss');
       if (closeBtn) closeBtn.click();
       await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
 
-  // 3. AUTO-SCROLL & PAGE SCAN
+  // 3. SCROLL & SCAN POSTS/COMMENTS
   await autoScroll();
+
+  // Scans visible text plus specific post items
   const pageContacts = extractContactFromText(document.body.innerText);
   const postContacts = extractPostsAndCommentsData();
 
@@ -140,9 +125,8 @@ async function extractProfileData() {
   const allEmails = [...new Set([...modalEmails, ...pageContacts.emails, ...postContacts.emails])];
   const allPhones = [...new Set([...modalPhones, ...pageContacts.phones, ...postContacts.phones])];
 
-  // Final check to close any open modal
-  const finalCloseBtn = document.querySelector('button[aria-label="Dismiss"]') || document.querySelector('.artdeco-modal__dismiss');
-  if (finalCloseBtn) finalCloseBtn.click();
+  // Force close any stuck modals
+  document.querySelectorAll('button[aria-label="Dismiss"]').forEach(b => b.click());
 
   return {
     name,
