@@ -20,10 +20,12 @@ async function updateUI() {
 
   profiles.forEach(p => {
     const tr = document.createElement("tr");
-    const contacts = [...p.emails, ...p.phones].join(", ") || "None found";
+    const email = p.emails.join(", ") || "N/A";
+    const phone = p.phones.join(", ") || "N/A";
     tr.innerHTML = `
       <td style="font-weight:600">${p.name}</td>
-      <td class="contact-cell" title="${contacts}">${contacts}</td>
+      <td class="contact-cell" title="${email}">${email}</td>
+      <td class="contact-cell" title="${phone}">${phone}</td>
       <td><a href="${p.profileUrl}" target="_blank" class="icon-link">🔗</a></td>
     `;
     dataBody.appendChild(tr);
