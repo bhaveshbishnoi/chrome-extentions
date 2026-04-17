@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Temu Scraper</h1>
+            <div id="status-dot" class="dot-red"></div>
+        </header>
+
+        <div id="setup-section" class="section">
+            <p>First, link your project <code>/assets</code> folder.</p>
+            <button id="btn-select-folder" class="btn-primary">Select Assets Folder</button>
+            <p class="info">This folder should contain <code>data/products.json</code> and an <code>images</code> folder.</p>
+        </div>
+
+        <div id="scrape-section" class="section hidden">
+            <div class="folder-info">
+                <span class="label">Project:</span>
+                <span id="folder-path">Not Set</span>
+                <button id="btn-change-folder" class="btn-text">Change</button>
+            </div>
+
+            <div class="field">
+                <label for="category-select">Category</label>
+                <select id="category-select">
+                    <option value="accessories">Accessories</option>
+                    <option value="ethnicwear">Ethnicwear</option>
+                    <option value="menswear">Menswear</option>
+                    <option value="womenswear">Womenswear</option>
+                </select>
+            </div>
+
+            <button id="btn-scrape" class="btn-primary">Scrape Product</button>
+        </div>
+
+        <div id="status-area" class="section hidden">
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <p id="status-text">Ready</p>
+        </div>
+
+        <div id="preview-area" class="section hidden">
+            <div class="preview-item">
+                <img id="preview-img" src="" alt="">
+                <div class="preview-details">
+                    <p id="preview-title"></p>
+                    <p id="preview-price"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
