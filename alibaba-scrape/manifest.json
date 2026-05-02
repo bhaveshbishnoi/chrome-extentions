@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Alibaba Scraper Pro",
+  "version": "1.0",
+  "description": "Premium product scraper for Alibaba with JSON-based extraction and local asset saving.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.alicdn.com/*",
+    "*://*.alibaba.com/*",
+    "*://*.aliexpress.com/*",
+    "*://*.mmstat.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.alibaba.com/product-detail/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

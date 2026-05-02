@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alibaba Scraper Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <h1>Alibaba Pro</h1>
+            </div>
+            <div class="status-indicator">
+                <div id="status-dot" class="dot off"></div>
+                <span id="status-text">Disconnected</span>
+            </div>
+        </header>
+
+        <!-- SETUP VIEW: Appears when no folder is selected -->
+        <div id="setup-view" class="setup-view glass-pane">
+            <div class="icon-box">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </div>
+            <h2 class="setup-title">Setup Scraper</h2>
+            <p class="setup-desc">Connect to your project's root folder to save products and images directly.</p>
+            <button id="btn-select-folder" class="btn btn-primary">
+                Select Project Folder
+            </button>
+        </div>
+
+        <!-- SCRAPE VIEW: Appears when folder is connected -->
+        <div id="scrape-view" class="glass-pane hidden">
+            <div class="folder-hint">
+                <span>Working in:</span>
+                <span id="folder-name">assets</span>
+            </div>
+
+            <div class="input-group">
+                <label for="category-select">Product Category</label>
+                <div class="select-wrapper">
+                    <select id="category-select">
+                        <option value="electronics">Electronics</option>
+                        <option value="accessories">Accessories</option>
+                        <option value="menswear">Menswear</option>
+                        <option value="womenswear">Womenswear</option>
+                        <option value="ethnicwear">Ethnicwear</option>
+                        <option value="home-living">Home & Living</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="btn-scrape" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                Extract Product
+            </button>
+
+            <button id="btn-change-folder" class="btn btn-secondary" style="margin-top: 12px; font-size: 11px; padding: 8px;">
+                Change Folder
+            </button>
+        </div>
+
+        <!-- PROGRESS AREA -->
+        <div id="progress-area" class="glass-pane hidden">
+            <div class="progress-header">
+                <span id="progress-status">Initializing...</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="bar-outer">
+                <div id="progress-fill" class="bar-inner"></div>
+            </div>
+        </div>
+
+        <!-- PREVIEW AREA -->
+        <div id="preview-area" class="glass-pane hidden">
+            <div class="preview-card">
+                <div class="preview-img-box">
+                    <img id="preview-img" src="" alt="Product">
+                </div>
+                <div class="preview-info">
+                    <h3 id="preview-title">Product Name</h3>
+                    <div id="preview-price" class="preview-price">₹0.00</div>
+                </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 11px; color: #10b981; text-align: center; font-weight: 600;">
+                ✓ Saved to products.json
+            </div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

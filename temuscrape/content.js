@@ -39,18 +39,23 @@ function getProductData() {
             .replace(/\s+/g, '-')
             .slice(0, 50);
 
-        const shortDesc = `Stylish ${title} available at ModernLinks.`;
+        const generatePrice = (min, max) => {
+            const minUnit = Math.ceil(min / 10);
+            const maxUnit = Math.floor(max / 10);
+            return Math.floor(Math.random() * (maxUnit - minUnit + 1) + minUnit) * 10 + 9;
+        };
+
+        const discountPrice = generatePrice(99, 199);
+        const originalPrice = generatePrice(899, 3399);
+
         return {
             id: productId,
             title: title,
             slug: slug,
             description: shortDesc,
             long_description: shortDesc,
-            price: 1300, // Default price as seen in your example
-            discount_price: (() => {
-                const possible = [99, 109, 119, 129, 139, 149, 159, 169, 179, 189, 199];
-                return possible[Math.floor(Math.random() * possible.length)];
-            })(),
+            price: originalPrice,
+            discount_price: discountPrice,
             imageUrls: images,
             sizes: ["S", "M", "L", "XL"],
             reviews: [],
