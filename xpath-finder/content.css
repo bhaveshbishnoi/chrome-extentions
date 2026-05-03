@@ -1,0 +1,189 @@
+/* XPath Finder Pro - Content Styles */
+
+:root {
+  --xfp-primary: #6366f1;
+  --xfp-secondary: #a855f7;
+  --xfp-bg: rgba(15, 23, 42, 0.8);
+  --xfp-border: rgba(255, 255, 255, 0.1);
+  --xfp-text: #f8fafc;
+  --xfp-text-muted: #94a3b8;
+  --xfp-success: #22c55e;
+  --xfp-warning: #f59e0b;
+  --xfp-danger: #ef4444;
+}
+
+/* Highlighting */
+.xfp-highlight {
+  outline: 2px solid var(--xfp-primary) !important;
+  outline-offset: -2px !important;
+  position: relative !important;
+  z-index: 2147483645 !important;
+  pointer-events: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4) !important;
+}
+
+.xfp-locked {
+  outline: 2px solid var(--xfp-secondary) !important;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Floating Panel */
+#xfp-panel-container {
+  position: fixed !important;
+  top: 20px;
+  right: 20px;
+  width: 380px;
+  z-index: 2147483647 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  user-select: none !important;
+  pointer-events: auto !important;
+}
+
+#xfp-panel {
+  background: var(--xfp-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--xfp-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  color: var(--xfp-text);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.xfp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  cursor: move;
+}
+
+.xfp-logo {
+  font-weight: 800;
+  font-size: 16px;
+  background: linear-gradient(135deg, var(--xfp-primary), var(--xfp-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+}
+
+.xfp-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.xfp-btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--xfp-border);
+  border-radius: 8px;
+  color: var(--xfp-text);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.xfp-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.xfp-btn-icon.xfp-active {
+  background: var(--xfp-primary);
+  border-color: var(--xfp-primary);
+  color: white;
+}
+
+.xfp-section {
+  margin-bottom: 16px;
+}
+
+.xfp-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--xfp-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.xfp-value-container {
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--xfp-border);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.xfp-value {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--xfp-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.xfp-copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--xfp-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.xfp-copy-btn:hover {
+  color: var(--xfp-primary);
+}
+
+.xfp-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.xfp-stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--xfp-border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.xfp-stat-label {
+  font-size: 10px;
+  color: var(--xfp-text-muted);
+  margin-bottom: 2px;
+}
+
+.xfp-stat-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.xfp-stability-high { color: var(--xfp-success); }
+.xfp-stability-med { color: var(--xfp-warning); }
+.xfp-stability-low { color: var(--xfp-danger); }
+
+/* Animations */
+@keyframes xfp-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.xfp-searching {
+  animation: xfp-pulse 1.5s infinite;
+}

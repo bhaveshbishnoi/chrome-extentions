@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XPath Finder Pro Test Page</title>
+    <style>
+        body { font-family: system-ui; padding: 50px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .btn { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .dynamic-id { background: #e9ecef; padding: 10px; border-radius: 4px; }
+        iframe { width: 100%; height: 200px; border: 1px solid #ccc; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>XPath Finder Pro Test Page</h1>
+    
+    <div class="card">
+        <h3>Stable Elements</h3>
+        <button id="stable-id-btn" class="btn btn-primary">Button with Stable ID</button>
+        <button data-testid="submit-btn" class="btn btn-primary">Button with data-testid</button>
+        <button aria-label="Search items" class="btn btn-primary">Button with Aria Label</button>
+    </div>
+
+    <div class="card">
+        <h3>Dynamic Elements (React-style)</h3>
+        <div id="root_12345" class="dynamic-id">
+            <button class="css-1abcde-btn btn">Hashed Class Button</button>
+            <span class="StyledText-sc-123456-0">Hashed Styled Component Text</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Text-based Elements</h3>
+        <a href="#">Click here for more details</a>
+        <p>This is a paragraph with <strong>nested bold text</strong>.</p>
+    </div>
+
+    <div id="shadow-host"></div>
+
+    <script>
+        // Setup Shadow DOM
+        const host = document.getElementById('shadow-host');
+        const shadow = host.attachShadow({mode: 'open'});
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div style="padding: 20px; background: #fff; border: 1px solid #ddd; margin-top: 20px;">
+                <h3>Inside Shadow DOM</h3>
+                <button id="shadow-btn" style="background: purple; color: white; border: none; padding: 10px;">Shadow Button</button>
+            </div>
+        `;
+        shadow.appendChild(div);
+    </script>
+</body>
+</html>
